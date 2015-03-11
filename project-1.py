@@ -18,9 +18,9 @@ def get_categorical_features(val, num_of_categories):
     features = []
     for i in range(num_of_categories-1):
         if i == val:
-            features.append(0)
-        else:
             features.append(1)
+        else:
+            features.append(0)
     return features                
 
 def read_data(inpath):
@@ -31,11 +31,11 @@ def read_data(inpath):
             rowvals = []
             t = datetime.datetime.strptime(row[0], '%Y-%m-%d %H:%M:%S')
             rowvals.extend(get_features(t.hour))
-            rowvals.extend(get_categorical_features(t.weekday(),7))
+            rowvals.extend(get_features(t.weekday()))
             #rowvals.extend(get_features(t.minute))
             #rowvals.extend(get_features(t.second))
-            #rowvals.extend(get_features(t.month))
-            #rowvals.extend(get_categorical_features(t.year-2013,2))
+            rowvals.extend(get_features(t.month))
+            rowvals.extend(get_features(t.year-2012))
             #rowvals.extend(get_features(t.day))
             #A = float(row[1])
             #rowvals.extend(get_features(A))
@@ -61,9 +61,6 @@ X = read_data('project-1-data/train.csv')
 Y = np.genfromtxt('project-1-data/train_y.csv', delimiter=',')
 
 Xtrain, Xtest, Ytrain, Ytest = skcv.train_test_split(X, Y, train_size=0.75)
-
-Xtrain_scaled = skpp.scale(Xtrain)
-Xtest_scaled = skpp.scale(Xtest)
 
 #plt.plot(Xtrain[:,0], Ytrain, 'bo')
 #plt.xlim([-0.5,23.5])
