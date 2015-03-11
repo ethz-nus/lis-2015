@@ -31,6 +31,7 @@ def read_data(inpath):
             rowvals = []
             t = datetime.datetime.strptime(row[0], '%Y-%m-%d %H:%M:%S')
             rowvals.extend(get_features(t.hour))
+            rowvals.extend(get_categorical_features(t.weekday(),7))
             #rowvals.extend(get_features(t.minute))
             #rowvals.extend(get_features(t.second))
             #rowvals.extend(get_features(t.month))
@@ -113,7 +114,7 @@ print 'grid score = ', -grid_search.best_score_
 ##Kernelized
 scaler = skpp.StandardScaler()
 
-svr_rbf = sksvm.SVR(kernel='rbf', C=10000, gamma=0.1, cache_size=1024)
+svr_rbf = sksvm.SVR(kernel='rbf', cache_size=1024, C=5000, gamma=0.1)
 Xtrain_scaled = scaler.fit_transform(Xtrain)
 Xtest_scaled = scaler.transform(Xtest)
 rbf_regressor = svr_rbf.fit(Xtrain, Ytrain)
