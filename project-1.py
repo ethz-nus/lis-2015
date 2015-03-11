@@ -33,7 +33,7 @@ def read_data(inpath):
             rowvals.extend(get_features(t.hour))
             #rowvals.extend(get_features(t.minute))
             #rowvals.extend(get_features(t.second))
-            #rowvals.extend(get_categorical_features(t.month-1,12))
+            #rowvals.extend(get_features(t.month))
             #rowvals.extend(get_categorical_features(t.year-2013,2))
             #rowvals.extend(get_features(t.day))
             #A = float(row[1])
@@ -111,22 +111,50 @@ print 'grid score = ', -grid_search.best_score_
 """
 
 ##Kernelized
-svr_rbf = sksvm.SVR(kernel='rbf')
-Xtrain_scaled = skpp.scale(Xtrain)
-Xtest_scaled = skpp.scale(Xtest)
+scaler = skpp.StandardScaler()
+
+svr_rbf = sksvm.SVR(kernel='rbf', C=10000, gamma=0.1, cache_size=1024)
+Xtrain_scaled = scaler.fit_transform(Xtrain)
+Xtest_scaled = scaler.transform(Xtest)
 rbf_regressor = svr_rbf.fit(Xtrain, Ytrain)
 y_rbf = rbf_regressor.predict(Xtest)
 print 'rbf score =', logscore(Ytest, y_rbf)
 
-C_range = np.logspace(-2, 10, 13)
-gamma_range = np.logspace(-9, 3, 13)
-param_grid = dict(gamma=gamma_range, C=C_range)
+Xval = read_data('project-1-data/validate.csv')
+Xval_scaled = scaler.transform(Xval)
+Yd = rbf_regressor.predict(Xval)
+np.savetxt('result_validate.txt', Yd)
+"""
+#Xtrain = scaler.fit_transform(Xtrain)
+gamma_range = np.logspace(-1, 5, 5)
+param_grid = dict(gamma=gamma_range)
 neg_scorefun = skmet.make_scorer(lambda x,y: -logscore(x,y))
-grid_search = skgs.GridSearchCV(sksvm.SVR(kernel='rbf'), param_grid, scoring=neg_scorefun)
-grid_search.fit(Xtrain, Ytrain)
+grid_search = skgs.GridSearchCV(sksvm.SVR(C=10000, kernel='rbf', cache_size=1024), param_grid, scoring=neg_scorefun, cv=5)
+grid_search.fit(Xtrain_scaled, Ytrain)
 new_kernelized = grid_search.best_estimator_
 print 'grid score = ', -grid_search.best_score_
+print 'The best classifier is: ', grid_search.best_estimator_
+"""
+"""
+# plot the scores of the grid
+# grid_scores_ contains parameter settings and scores
+score_dict = grid_search.grid_scores_
 
+# We extract just the scores
+scores = [x[1] for x in score_dict]
+scores = np.array(scores).reshape(len(C_range), len(gamma_range))
+
+# Make a nice figure
+plt.figure(figsize=(8, 6))
+plt.subplots_adjust(left=0.15, right=0.95, bottom=0.15, top=0.95)
+plt.imshow(scores, interpolation='nearest', cmap=plt.cm.spectral)
+plt.xlabel('gamma')
+plt.ylabel('C')
+plt.colorbar()
+plt.xticks(np.arange(len(gamma_range)), gamma_range, rotation=45)
+plt.yticks(np.arange(len(C_range)), C_range)
+plt.show()
+"""
 """
 Xval = read_data('project-1-data/validate.csv')
 Xval_scaled = skpp.scale(Xval)
