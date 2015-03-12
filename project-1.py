@@ -12,6 +12,7 @@ Things tried which seemed to show worse results:
         (showed results ~0.9 - 1.0)
     Using categorical features for weekday, hour, month, year
         (showed similar results but slower runtime due to more features)
+Time to run ~ 2 minutes
 """
 
 import numpy as np
@@ -73,7 +74,7 @@ svr_rbf = sksvm.SVR(kernel='rbf', cache_size=1024, C=5000, gamma=0.1)
 rbf_regressor = svr_rbf.fit(Xtrain, Ytrain)
 y_rbf = rbf_regressor.predict(Xtest)
 score = logscore(Ytest, y_rbf)
-print 'rbf score =', score)
+print ('rbf score = %f' % score)
 
 """
 Read validation data and output prediction to file
@@ -81,4 +82,4 @@ Change validate.csv to test.csv to output predictions for test
 """
 Xval = read_data('project-1-data/validate.csv')
 Yd = rbf_regressor.predict(Xval)
-np.savetxt('result_validate.txt-' + score, Yd)
+np.savetxt('result_validate.txt-%f' % score, Yd)
