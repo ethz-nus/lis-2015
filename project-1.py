@@ -1,3 +1,19 @@
+"""
+Description - Regression based on Radial based function Kernel
+Feature parameters chosen -
+    hour, weekday, month, year, C, E
+    chosen based on greedy addition
+Things tried which seemed to show worse results:
+    Scaling to zero mean and unit variance using scikit learn preprocessing
+        (showed worse results by 0.03 - 0.04 for all methods)
+    Linear Regressions - Ridge, Lasso, ElasticNet
+        (showed results ~1.1)
+    Linear and Poly Kernel
+        (showed results ~0.9 - 1.0)
+    Using categorical features for weekday, hour, month, year
+        (showed similar results but slower runtime due to more features)
+"""
+
 import numpy as np
 import matplotlib.pylab as plt
 import csv
@@ -7,21 +23,6 @@ import sklearn.linear_model as sklin
 import sklearn.metrics as skmet
 import sklearn.grid_search as skgs
 import sklearn.svm as sksvm
-import sklearn.preprocessing as skpp
-
-def get_features(h):
-    h = float(h)
-    #return [h, np.exp(h), np.square(h), np.power(h,3), np.power(h,4)]    
-    return [h]    
-
-def get_categorical_features(val, num_of_categories):
-    features = []
-    for i in range(num_of_categories-1):
-        if i == val:
-            features.append(1)
-        else:
-            features.append(0)
-    return features                
 
 def read_data(inpath):
     X = []
@@ -30,25 +31,25 @@ def read_data(inpath):
         for row in reader:
             rowvals = []
             t = datetime.datetime.strptime(row[0], '%Y-%m-%d %H:%M:%S')
-            rowvals.extend(get_features(t.hour))
-            rowvals.extend(get_features(t.weekday()))
-            #rowvals.extend(get_features(t.minute))
-            #rowvals.extend(get_features(t.second))
-            rowvals.extend(get_features(t.month))
-            rowvals.extend(get_features(t.year-2012))
-            #rowvals.extend(get_features(t.day))
+            rowvals.append(float(t.hour))
+            rowvals.append(float(t.weekday()))
+            #rowvals.append(t.minute)
+            #rowvals.append(t.second)
+            rowvals.append(float(t.month))
+            rowvals.append(float(t.year-2012))
+            #rowvals.append(t.day)
             #A = float(row[1])
-            #rowvals.extend(get_features(A))
-            #B = int(row[2])
-            #rowvals.extend(get_categorical_features(B,4))
+            #rowvals.append(A)
+            #B = float(row[2])
+            #rowvals.append(B)
             C = float(row[3])
-            rowvals.extend(get_features(C))
+            rowvals.append(C)
             #D = float(row[4])
-            #rowvals.extend(get_features(D))
+            #rowvals.append(D)
             E = float(row[5])
-            rowvals.extend(get_features(E))
+            rowvals.append(E)
             #F = float(row[6])
-            #rowvals.extend(get_features(F))
+            #rowvals.append(F)
             X.append(rowvals)
     return np.atleast_2d(X) # Change from (n,) to (n,1)
 
@@ -62,111 +63,22 @@ Y = np.genfromtxt('project-1-data/train_y.csv', delimiter=',')
 
 Xtrain, Xtest, Ytrain, Ytest = skcv.train_test_split(X, Y, train_size=0.75)
 
-#plt.plot(Xtrain[:,0], Ytrain, 'bo')
-#plt.xlim([-0.5,23.5])
-#plt.ylim([0,1000])
-#plt.show()
 """
-regressor = sklin.Ridge()
-regressor.fit(Xtrain_scaled, Ytrain)
-print regressor.coef_
+Radial based function kernel regressor on train data
+Choice of parameters C and gamma based on:
+    Grid search about logspace to determine order of magnitude
+    Greedy increase and decrease to finetune
 """
-
-"""
-Hplot = range(25)
-Xplot = np.atleast_2d([get_features(x) for x in Hplot])
-Yplot = regressor.predict(Xplot)
-plt.plot(Hplot, Yplot, 'r', linewidth=3)
-plt.show()
-"""
-
-"""
-Ypred = regressor.predict(Xtest_scaled)
-print 'score =', logscore(Ytest, Ypred)
-"""
-"""
-## Cross validation
-scorefun = skmet.make_scorer(logscore)
-scores = skcv.cross_val_score(regressor, X, Y, scoring=scorefun, cv=5)
-print sum(scores)/len(scores)
-
-## How to submit
-Xval = read_data('project-1-data/validate.csv')
-#Ypred = regressor.predict(Xval)
-#np.savetxt('result_validate.txt', Ypred)
-"""
-"""
-##With Hyper parameters
-regressor_ridge = sklin.Ridge()
-param_grid = {'alpha': np.linspace(0, 100, 10)}
-neg_scorefun = skmet.make_scorer(lambda x, y: -logscore(x,y))
-grid_search = skgs.GridSearchCV(regressor_ridge, param_grid, scoring=neg_scorefun, cv=5)
-grid_search.fit(Xtrain_scaled,Ytrain)
-new_regressor = grid_search.best_estimator_
-print 'grid score = ', -grid_search.best_score_
-#Ypred = new_regressor.predict(Xval)
-#np.savetxt('grid_validate.txt', Ypred)
-"""
-
-##Kernelized
-scaler = skpp.StandardScaler()
-
 svr_rbf = sksvm.SVR(kernel='rbf', cache_size=1024, C=5000, gamma=0.1)
-Xtrain_scaled = scaler.fit_transform(Xtrain)
-Xtest_scaled = scaler.transform(Xtest)
 rbf_regressor = svr_rbf.fit(Xtrain, Ytrain)
 y_rbf = rbf_regressor.predict(Xtest)
-print 'rbf score =', logscore(Ytest, y_rbf)
+score = logscore(Ytest, y_rbf)
+print 'rbf score =', score)
 
+"""
+Read validation data and output prediction to file
+Change validate.csv to test.csv to output predictions for test
+"""
 Xval = read_data('project-1-data/validate.csv')
-Xval_scaled = scaler.transform(Xval)
 Yd = rbf_regressor.predict(Xval)
-np.savetxt('result_validate.txt', Yd)
-"""
-#Xtrain = scaler.fit_transform(Xtrain)
-gamma_range = np.logspace(-1, 5, 5)
-param_grid = dict(gamma=gamma_range)
-neg_scorefun = skmet.make_scorer(lambda x,y: -logscore(x,y))
-grid_search = skgs.GridSearchCV(sksvm.SVR(C=10000, kernel='rbf', cache_size=1024), param_grid, scoring=neg_scorefun, cv=5)
-grid_search.fit(Xtrain_scaled, Ytrain)
-new_kernelized = grid_search.best_estimator_
-print 'grid score = ', -grid_search.best_score_
-print 'The best classifier is: ', grid_search.best_estimator_
-"""
-"""
-# plot the scores of the grid
-# grid_scores_ contains parameter settings and scores
-score_dict = grid_search.grid_scores_
-
-# We extract just the scores
-scores = [x[1] for x in score_dict]
-scores = np.array(scores).reshape(len(C_range), len(gamma_range))
-
-# Make a nice figure
-plt.figure(figsize=(8, 6))
-plt.subplots_adjust(left=0.15, right=0.95, bottom=0.15, top=0.95)
-plt.imshow(scores, interpolation='nearest', cmap=plt.cm.spectral)
-plt.xlabel('gamma')
-plt.ylabel('C')
-plt.colorbar()
-plt.xticks(np.arange(len(gamma_range)), gamma_range, rotation=45)
-plt.yticks(np.arange(len(C_range)), C_range)
-plt.show()
-"""
-"""
-Xval = read_data('project-1-data/validate.csv')
-Xval_scaled = skpp.scale(Xval)
-Yd = rbf_regressor.predict(Xval_scaled)
-np.savetxt('result_validate.txt', Yd)
-svr_lin = sksvm.SVR(kernel='linear')
-lin_regressor = svr_lin.fit(Xtrain, Ytrain)
-y_lin = lin_regressor.predict(Xtest)
-print 'lin score =', logscore(Ytest, y_lin)
-
-svr_poly = sksvm.SVR(kernel='poly', degree=4)
-Xtrain_scaled = skpp.scale(Xtrain)
-Xtest_scaled = skpp.scale(Xtest)
-poly_regressor = svr_poly.fit(Xtrain_scaled, Ytrain)
-y_poly = poly_regressor.predict(Xtest_scaled)
-print 'poly score =', logscore(Ytest, y_poly)
-"""
+np.savetxt('result_validate.txt-' + score, Yd)
