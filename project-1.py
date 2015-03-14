@@ -24,6 +24,7 @@ import sklearn.linear_model as sklin
 import sklearn.metrics as skmet
 import sklearn.grid_search as skgs
 import sklearn.svm as sksvm
+from sklearn.grid_search import GridSearchCV
 
 def read_data(inpath):
     X = []
@@ -56,7 +57,7 @@ def read_data(inpath):
 
 def logscore(gtruth, pred):
     pred = np.clip(pred, 0, np.inf)
-    logdif = np.log(1 + gtruth) - np.log(1 + pred)
+    logdif = np.log(1 + gtruth) - np.log(1 + np.maximum(0, pred))
     return np.sqrt(np.mean(np.square(logdif)))
 
 X = read_data('project-1-data/train.csv')
@@ -70,11 +71,19 @@ Choice of parameters C and gamma based on:
     Grid search about logspace to determine order of magnitude
     Greedy increase and decrease to finetune
 """
-svr_rbf = sksvm.SVR(kernel='rbf', cache_size=1024, C=5000, gamma=0.1)
+avgYTrain = np.mean(Ytrain)
+YTrainsd = np.std(Ytrain)
+cval = max(abs(avgYTrain + 3 * YTrainsd), abs(avgYTrain - 3*YTrainsd))
+
+
+svr_rbf = sksvm.SVR(kernel='rbf', cache_size=1024, C=cval, gamma=0.15, epsilon=1.75)
+
 rbf_regressor = svr_rbf.fit(Xtrain, Ytrain)
 y_rbf = rbf_regressor.predict(Xtest)
 score = logscore(Ytest, y_rbf)
+
 print ('rbf score = %f' % score)
+print rbf_regressor.get_params()
 
 """
 Read validation data and output prediction to file
