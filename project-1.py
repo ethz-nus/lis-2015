@@ -76,28 +76,16 @@ YTrainsd = np.std(Ytrain)
 cval = max(abs(avgYTrain + 3 * YTrainsd), abs(avgYTrain - 3*YTrainsd))
 
 
-# svr_estimator = sksvm.SVR(kernel='rbf', cache_size=1024, C=cval, degree=6)
-# gammas = np.logspace(-0.9, -0.68, 15)
+# svr_estimator = sksvm.SVR(kernel='rbf', cache_size=1024, C=cval, degree=6, epsilon=1.75)
+# gammas = np.logspace(-0.43, -0.38, 20)
 # epsilons = np.logspace(-1.2, -0.5, 15)
 # neg_scorefun = skmet.make_scorer(lambda x, y: logscore(x,y), greater_is_better=False)
-# classifier = GridSearchCV(estimator=svr_estimator, cv=5, scoring=neg_scorefun, param_grid=dict(epsilon=epsilons))
+# classifier = GridSearchCV(estimator=svr_estimator, cv=5, scoring=neg_scorefun, param_grid=dict(gamma=gammas))
 # classifier.fit(Xtrain, Ytrain)
 # print classifier.get_params()
 
-def compute_estimated_noise_var(vals, k):
-    size = len(vals)
-    variances = 0
-    mean = np.mean(vals)
-    for i in range(size):
-        variances += (vals[i] - mean) ** 2
-    return k / (k-1.0) * 1.0/size * variances
 
-# size = len(Ytrain)
-# epval = 3 * 0.2 * np.sqrt(np.log(size)/size)
-# print epval
-
-
-svr_rbf = sksvm.SVR(kernel='rbf', cache_size=1024, C=cval, gamma=0.17, epsilon=0.49, degree=6)
+svr_rbf = sksvm.SVR(kernel='rbf', cache_size=1024, C=cval, gamma=0.17435265754327808, epsilon=1.75, degree=6)
 
 rbf_regressor = svr_rbf.fit(Xtrain, Ytrain)
 y_rbf = rbf_regressor.predict(Xtest)
@@ -106,10 +94,15 @@ score = logscore(Ytest, y_rbf)
 print ('rbf score = %f' % score)
 print rbf_regressor.get_params()
 
+# size = Ytrain.size
+# epval = 3 * score * np.sqrt(np.log(size)/size)
+# print(epval)
+
 """
 Read validation data and output prediction to file
 Change validate.csv to test.csv to output predictions for test
 """
-Xval = read_data('project-1-data/validate.csv')
-Yd = rbf_regressor.predict(Xval)
-np.savetxt('result_validate.txt-%f' % score, Yd)
+if score < 0.43:
+    Xval = read_data('project-1-data/validate.csv')
+    Yd = rbf_regressor.predict(Xval)
+    np.savetxt('result_validate.txt-%f' % score, Yd)
