@@ -81,16 +81,16 @@ Y = np.genfromtxt('project-1-data/train_y.csv', delimiter=',')
 
 # Xtrain, Xtest, Ytrain, Ytest = skcv.train_test_split(X, Y, train_size=0.75)
 numTries = 50
-minScore = 0.43
+minScore = 0.42
 res = []
-avgScore = 0
+scores = []
+totalScore = 0
 for i in range(numTries):
-    rbf_regressor, score = partition_and_train(X, Y, 0.17, 1.75)
+    rbf_regressor, score = partition_and_train(X, Y, 0.17435, 1.75)
     if score < minScore:
         res.append(rbf_regressor)
-        avgScore += score
-if res:
-    avgScore = avgScore / float(len(res))
+        scores.append(score)
+        totalScore += score
 
 """
 Radial based function kernel regressor on train data
@@ -105,7 +105,7 @@ Choice of parameters C and gamma based on:
 
 # svr_estimator = sksvm.SVR(kernel='rbf', cache_size=1024, C=cval, degree=6, epsilon=1.75)
 # gammas = np.logspace(-0.8, -0.690, 15)
-# epsilons = np.logspace(-1.2, -0.5, 15)
+# epsilons = np.logspace(0.23, 0.28, 15)
 # neg_scorefun = skmet.make_scorer(lambda x, y: logscore(x,y), greater_is_better=False)
 # classifier = GridSearchCV(estimator=svr_estimator, cv=5, scoring=neg_scorefun, param_grid=dict(gamma=gammas))
 # classifier.fit(Xtrain, Ytrain)
@@ -140,7 +140,8 @@ if res:
         Yd = regressor.predict(Xval)
         Yds.append(Yd.tolist())
 
-    result = np.array([sum([lst[i]/len(Yds) for lst in Yds]) for i in range(len(Yds[0]))])
+    result = np.array([sum([scores[pos] * lst[i]/totalScore for pos, lst in enumerate(Yds)]) for i in range(len(Yds[0]))])
+    avgScore = totalScore/len(Yds)
     np.savetxt('result_validate.txt-%f' % avgScore, result)
 
 
