@@ -60,10 +60,37 @@ def logscore(gtruth, pred):
     logdif = np.log(1 + gtruth) - np.log(1 + np.maximum(0, pred))
     return np.sqrt(np.mean(np.square(logdif)))
 
+def partition_and_train(X, Y, gamma, epsilon):
+    Xtrain, Xtest, Ytrain, Ytest = skcv.train_test_split(X, Y, train_size=0.75)
+    avgYTrain = np.mean(Ytrain)
+    YTrainsd = np.std(Ytrain)
+    cval = max(abs(avgYTrain + 3 * YTrainsd), abs(avgYTrain - 3*YTrainsd))
+    svr_rbf = sksvm.SVR(kernel='rbf', cache_size=1024, C=cval, gamma=gamma, epsilon=epsilon, degree=6)
+
+    rbf_regressor = svr_rbf.fit(Xtrain, Ytrain)
+    y_rbf = rbf_regressor.predict(Xtest)
+    score = logscore(Ytest, y_rbf)
+    print ('rbf score = %f' % score)
+    print rbf_regressor.get_params()
+    return rbf_regressor, score
+
+
+
 X = read_data('project-1-data/train.csv')
 Y = np.genfromtxt('project-1-data/train_y.csv', delimiter=',')
 
-Xtrain, Xtest, Ytrain, Ytest = skcv.train_test_split(X, Y, train_size=0.75)
+# Xtrain, Xtest, Ytrain, Ytest = skcv.train_test_split(X, Y, train_size=0.75)
+numTries = 50
+minScore = 0.43
+res = []
+avgScore = 0
+for i in range(numTries):
+    rbf_regressor, score = partition_and_train(X, Y, 0.17, 1.75)
+    if score < minScore:
+        res.append(rbf_regressor)
+        avgScore += score
+if res:
+    avgScore = avgScore / float(len(res))
 
 """
 Radial based function kernel regressor on train data
@@ -71,13 +98,13 @@ Choice of parameters C and gamma based on:
     Grid search about logspace to determine order of magnitude
     Greedy increase and decrease to finetune
 """
-avgYTrain = np.mean(Ytrain)
-YTrainsd = np.std(Ytrain)
-cval = max(abs(avgYTrain + 3 * YTrainsd), abs(avgYTrain - 3*YTrainsd))
+# avgYTrain = np.mean(Ytrain)
+# YTrainsd = np.std(Ytrain)
+# cval = max(abs(avgYTrain + 3 * YTrainsd), abs(avgYTrain - 3*YTrainsd))
 
 
 # svr_estimator = sksvm.SVR(kernel='rbf', cache_size=1024, C=cval, degree=6, epsilon=1.75)
-# gammas = np.logspace(-0.43, -0.38, 20)
+# gammas = np.logspace(-0.8, -0.690, 15)
 # epsilons = np.logspace(-1.2, -0.5, 15)
 # neg_scorefun = skmet.make_scorer(lambda x, y: logscore(x,y), greater_is_better=False)
 # classifier = GridSearchCV(estimator=svr_estimator, cv=5, scoring=neg_scorefun, param_grid=dict(gamma=gammas))
@@ -85,14 +112,14 @@ cval = max(abs(avgYTrain + 3 * YTrainsd), abs(avgYTrain - 3*YTrainsd))
 # print classifier.get_params()
 
 
-svr_rbf = sksvm.SVR(kernel='rbf', cache_size=1024, C=cval, gamma=0.17435265754327808, epsilon=1.75, degree=6)
+# svr_rbf = sksvm.SVR(kernel='rbf', cache_size=1024, C=cval, gamma=0.17435265754327808, epsilon=1.75, degree=6)
 
-rbf_regressor = svr_rbf.fit(Xtrain, Ytrain)
-y_rbf = rbf_regressor.predict(Xtest)
-score = logscore(Ytest, y_rbf)
+# rbf_regressor = svr_rbf.fit(Xtrain, Ytrain)
+# y_rbf = rbf_regressor.predict(Xtest)
+# score = logscore(Ytest, y_rbf)
 
-print ('rbf score = %f' % score)
-print rbf_regressor.get_params()
+# print ('rbf score = %f' % score)
+# print rbf_regressor.get_params()
 
 # size = Ytrain.size
 # epval = 3 * score * np.sqrt(np.log(size)/size)
@@ -102,7 +129,18 @@ print rbf_regressor.get_params()
 Read validation data and output prediction to file
 Change validate.csv to test.csv to output predictions for test
 """
-if score < 0.43:
+# if score < 0.43:
+#     Xval = read_data('project-1-data/validate.csv')
+#     Yd = rbf_regressor.predict(Xval)
+#     np.savetxt('result_validate.txt-%f' % score, Yd)
+if res:
     Xval = read_data('project-1-data/validate.csv')
-    Yd = rbf_regressor.predict(Xval)
-    np.savetxt('result_validate.txt-%f' % score, Yd)
+    Yds = []
+    for regressor in res:
+        Yd = regressor.predict(Xval)
+        Yds.append(Yd.tolist())
+
+    result = np.array([sum([lst[i]/len(Yds) for lst in Yds]) for i in range(len(Yds[0]))])
+    np.savetxt('result_validate.txt-%f' % avgScore, result)
+
+
