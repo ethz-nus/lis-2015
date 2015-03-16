@@ -80,13 +80,13 @@ X = read_data('project-1-data/train.csv')
 Y = np.genfromtxt('project-1-data/train_y.csv', delimiter=',')
 
 # Xtrain, Xtest, Ytrain, Ytest = skcv.train_test_split(X, Y, train_size=0.75)
-numTries = 50
-minScore = 0.42
+numTries = 10
+minScore = 0.43
 res = []
 scores = []
 totalScore = 0
 for i in range(numTries):
-    rbf_regressor, score = partition_and_train(X, Y, 0.17435, 1.75)
+    rbf_regressor, score = partition_and_train(X, Y, 0.17, 1.75)
     if score < minScore:
         res.append(rbf_regressor)
         scores.append(score)
@@ -134,14 +134,20 @@ Change validate.csv to test.csv to output predictions for test
 #     Yd = rbf_regressor.predict(Xval)
 #     np.savetxt('result_validate.txt-%f' % score, Yd)
 if res:
-    Xval = read_data('project-1-data/validate.csv')
+    XValidate = read_data('project-1-data/test.csv')
+    Xval = read_data('project-1-data/test.csv')
     Yds = []
+    yas = []
     for regressor in res:
         Yd = regressor.predict(Xval)
         Yds.append(Yd.tolist())
+        ya = regressor.predict(XValidate)
+        yas.append(ya.tolist())
 
     result = np.array([sum([scores[pos] * lst[i]/totalScore for pos, lst in enumerate(Yds)]) for i in range(len(Yds[0]))])
+    result1 = np.array([sum([scores[pos] * lst[i]/totalScore for pos, lst in enumerate(yas)]) for i in range(len(yas[0]))])
     avgScore = totalScore/len(Yds)
-    np.savetxt('result_validate.txt-%f' % avgScore, result)
+    np.savetxt('result_test.txt-%f' % avgScore, result)
+    np.savetxt('result_validate.txt-%f' % avgScore, result1)
 
 
