@@ -1,6 +1,15 @@
 from read import *
 from naive_svc import *
 import numpy as np
+import sklearn.preprocessing as skpp
+
+def normalise_data(X, normaliser=None):
+	if normaliser == None:
+		normaliser = skpp.StandardScaler()
+		newX = normaliser.fit_transform(X)
+	else:
+		newX = normaliser.transform(X)
+	return normaliser, newX
 
 def pred_score(trueYs, trueZs, predYs, predZs):
 	yscore = pred_score_single(trueYs, predYs)
@@ -37,8 +46,9 @@ zclassifier, zpred, ztruth = ztrainer(X, Yz)
 
 score = pred_score(ytruth, ztruth, ypred, zpred)
 
-print(score)
+print score
 
 print(ytruth[:20], ypred[:20])
+print(ztruth[:20], zpred[:20])
 
 run_and_save_prediction("project_data/validate.csv", "test", yclassifier, zclassifier, score)
