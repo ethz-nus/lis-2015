@@ -1,5 +1,5 @@
 from read import *
-from naive_svc import *
+from forest import *
 import numpy as np
 import sklearn.preprocessing as skpp
 
@@ -38,8 +38,8 @@ X = read_data_into_rows("project_data/train.csv")
 Y = read_data_into_rows("project_data/train_y.csv")
 Yy, Yz = separate_classification_data(Y)
 
-ytrainer = naive_svc_train
-ztrainer = naive_svc_train
+ytrainer = random_forest
+ztrainer = random_forest
 
 yclassifier, ypred, ytruth = ytrainer(X, Yy)
 zclassifier, zpred, ztruth = ztrainer(X, Yz)
