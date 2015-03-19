@@ -20,4 +20,9 @@ def read_data(filepath):
 			data.append(allVals)
 	return data
 
+def read_data_into_rows(filepath):
+    data = []
+    with open(filepath, 'r') as fin:
+        rows = list(map(lambda x: map(int, x), csv.reader(fin, delimiter=',')))
+        return rows
 #data = read_data("project_data/train.csv")
