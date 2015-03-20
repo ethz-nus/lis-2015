@@ -49,8 +49,8 @@ else:
 Y = read_data_into_rows("project_data/train_y.csv")
 Yy, Yz = separate_classification_data(Y)
 
-ytrainer = extra_random_trees
-ztrainer = extra_random_trees
+ytrainer = forest_one_v_rest
+ztrainer = forest_one_v_rest
 
 yclassifier, ypred, ytruth = ytrainer(X, Yy)
 zclassifier, zpred, ztruth = ztrainer(X, Yz)
@@ -62,4 +62,4 @@ print score
 print(ytruth[:20], ypred[:20])
 print(ztruth[:20], zpred[:20])
 
-run_and_save_prediction("project_data/validate.csv", "test", yclassifier, zclassifier, score, normaliser)
+run_and_save_prediction("project_data/validate.csv", "validate", yclassifier, zclassifier, score, normaliser)
