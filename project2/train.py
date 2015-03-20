@@ -5,18 +5,11 @@ import numpy as np
 
 normalise = True
 
-# def normalise_data(X, normaliser=None):
-# 	X = list(map(lambda x: map(float, x), X))
-# 	if normaliser == None:
-# 		normaliser = skpp.StandardScaler()
-# 		newX = normaliser.fit_transform(X)
-# 	else:
-# 		newX = normaliser.transform(X)
-# 	return normaliser, newX
-
 def pred_score(trueYs, trueZs, predYs, predZs):
 	yscore = pred_score_single(trueYs, predYs)
+	print yscore
 	zscore = pred_score_single(trueZs, predZs)
+	print zscore
 	return yscore + zscore
 
 def pred_score_single(truth, pred):
@@ -40,12 +33,8 @@ def run_and_save_prediction(testfile, outname, yclassifier, zclassifier, combine
 	np.savetxt(outname + '-%f.txt' % combinedScore, allRes, fmt="%d", delimiter=',')
 
 X = read_data_into_rows("project_data/train.csv")
-# if normalise:
-# 	normaliser, X = normalise_data(X)
-# else:
-# 	normaliser = None
-
 Y = read_data_into_rows("project_data/train_y.csv")
+
 Yy, Yz = separate_classification_data(Y)
 
 ytrainer = forest_one_v_rest
@@ -57,8 +46,5 @@ zclassifier, zpred, ztruth = ztrainer(X, Yz)
 score = pred_score(ytruth, ztruth, ypred, zpred)
 
 print score
-
-print(ytruth[:20], ypred[:20])
-print(ztruth[:20], zpred[:20])
 
 run_and_save_prediction("project_data/validate.csv", "validate", yclassifier, zclassifier, score)
