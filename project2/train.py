@@ -49,8 +49,8 @@ else:
 Y = read_data_into_rows("project_data/train_y.csv")
 Yy, Yz = separate_classification_data(Y)
 
-ytrainer = random_forest
-ztrainer = random_forest
+ytrainer = extra_random_trees
+ztrainer = extra_random_trees
 
 yclassifier, ypred, ytruth = ytrainer(X, Yy)
 zclassifier, zpred, ztruth = ztrainer(X, Yz)
