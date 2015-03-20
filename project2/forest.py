@@ -7,11 +7,11 @@ def random_forest(X, Y):
 	return build_classifier(X, Y, trainer)
 	
 def extra_random_trees(X, Y):
-	trainer = ExtraTreesClassifier(n_jobs=-1, n_estimators=53)
+	trainer = ExtraTreesClassifier(n_jobs=-1, n_estimators=500)
 	return build_classifier(X, Y, trainer)
 
 def forest_one_v_rest(X, Y):
-	trainer = OneVsRestClassifier(ExtraTreesClassifier(n_jobs=-1, n_estimators=53))
+	trainer = OneVsRestClassifier(ExtraTreesClassifier(n_jobs=-1, n_estimators=500))
 	return build_classifier(X, Y, trainer)
 
 def ada_boost(X, Y):
@@ -20,8 +20,14 @@ def ada_boost(X, Y):
 	return build_classifier(X, Y, trainer)
 
 def gradient_boosting(X, Y):
-	trainer = GradientBoostingClassifier()
+	trainer = GradientBoostingClassifier(n_estimators=1200, max_depth=6)
 	return build_classifier(X, Y, trainer)
+
+def feature_select(X, Y):
+	selector = RandomForestClassifier(n_jobs=-1, n_estimators=53)
+	selector.fit(X, Y)
+	selected = selector.transform(X)
+	return selector, selected
 
 def build_classifier(X, Y, trainer):
 	Xtrain, Xtest, Ytrain, Ytest = skcv.train_test_split(X, Y, train_size=0.75)
