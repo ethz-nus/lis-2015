@@ -2,18 +2,17 @@ from read import *
 from forest import *
 from naive_svc import *
 import numpy as np
-import sklearn.preprocessing as skpp
 
 normalise = True
 
-def normalise_data(X, normaliser=None):
-	X = list(map(lambda x: map(float, x), X))
-	if normaliser == None:
-		normaliser = skpp.StandardScaler()
-		newX = normaliser.fit_transform(X)
-	else:
-		newX = normaliser.transform(X)
-	return normaliser, newX
+# def normalise_data(X, normaliser=None):
+# 	X = list(map(lambda x: map(float, x), X))
+# 	if normaliser == None:
+# 		normaliser = skpp.StandardScaler()
+# 		newX = normaliser.fit_transform(X)
+# 	else:
+# 		newX = normaliser.transform(X)
+# 	return normaliser, newX
 
 def pred_score(trueYs, trueZs, predYs, predZs):
 	yscore = pred_score_single(trueYs, predYs)
@@ -29,10 +28,10 @@ def separate_classification_data(Y):
 	Yz = list(map(lambda x: x[1], Y))
 	return Yy, Yz
 
-def run_and_save_prediction(testfile, outname, yclassifier, zclassifier, combinedScore, normaliser=None):
+def run_and_save_prediction(testfile, outname, yclassifier, zclassifier, combinedScore):
 	testX = read_data_into_rows(testfile)
-	if normaliser != None:
-		normaliser, testX = normalise_data(testX, normaliser)
+	if normalise:
+		testX = cast_X_to_floats(testX)
 	yRes = yclassifier.predict(testX)
 	zRes = zclassifier.predict(testX)
 
@@ -41,10 +40,10 @@ def run_and_save_prediction(testfile, outname, yclassifier, zclassifier, combine
 	np.savetxt(outname + '-%f.txt' % combinedScore, allRes, fmt="%d", delimiter=',')
 
 X = read_data_into_rows("project_data/train.csv")
-if normalise:
-	normaliser, X = normalise_data(X)
-else:
-	normaliser = None
+# if normalise:
+# 	normaliser, X = normalise_data(X)
+# else:
+# 	normaliser = None
 
 Y = read_data_into_rows("project_data/train_y.csv")
 Yy, Yz = separate_classification_data(Y)
@@ -62,4 +61,4 @@ print score
 print(ytruth[:20], ypred[:20])
 print(ztruth[:20], zpred[:20])
 
-run_and_save_prediction("project_data/validate.csv", "validate", yclassifier, zclassifier, score, normaliser)
+run_and_save_prediction("project_data/validate.csv", "validate", yclassifier, zclassifier, score)
