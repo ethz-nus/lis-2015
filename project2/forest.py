@@ -8,7 +8,7 @@ import sklearn.cross_validation as skcv
 import sklearn.preprocessing as skpp
 
 normalise = True
-select = True
+select = False
 
 def random_forest(X, Y):
 	trainer = RandomForestClassifier(n_jobs=-1, n_estimators=53)
@@ -39,8 +39,10 @@ def build_classifier(X, Y, trainer):
 		steps.append(('normaliser', normaliser))
 	if select:
 		# selector = RandomForestClassifier(n_jobs=-1, n_estimators=106)
-		# selector = VarianceThreshold(threshold=0.05) #PCA doesn't seem to make any difference
-		selector = LinearSVC(penalty="l1", dual=False)
+		selector = VarianceThreshold(threshold=0.05) 
+		#PCA doesn't seem to make any difference
+		#KernelPCA is bad
+		# selector = LinearSVC(penalty="l1", dual=False, C=1.5)
 		steps.append(('selector', selector))
 
 	steps.append(('classification', trainer))

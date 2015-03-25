@@ -3,13 +3,11 @@ from forest import *
 from naive_svc import *
 import numpy as np
 
-normalise = True
-
 def pred_score(trueYs, trueZs, predYs, predZs):
 	yscore = pred_score_single(trueYs, predYs)
-	print yscore
+	# print yscore
 	zscore = pred_score_single(trueZs, predZs)
-	print zscore
+	# print zscore
 	return yscore + zscore
 
 def pred_score_single(truth, pred):
@@ -21,30 +19,45 @@ def separate_classification_data(Y):
 	Yz = list(map(lambda x: x[1], Y))
 	return Yy, Yz
 
-def run_and_save_prediction(testfile, outname, yclassifier, zclassifier, combinedScore):
+def run_prediction(testfile, yclassifier, zclassifier):
 	testX = read_data_into_rows(testfile)
 	if normalise:
 		testX = cast_X_to_floats(testX)
 	yRes = yclassifier.predict(testX)
 	zRes = zclassifier.predict(testX)
+	return yRes, zRes
 
+def save_prediction(outname, pred, score):
+	np.savetxt(outname + '-%f.txt' % score, pred, fmt="%d", delimiter=',')
+
+def run_and_save_prediction(testfile, outname, yclassifier, zclassifier, combinedScore):
+	yRes, zRes = run_prediction(testfile, yclassifier, zclassifier)
 	allRes = zip(yRes, zRes)
-
-	np.savetxt(outname + '-%f.txt' % combinedScore, allRes, fmt="%d", delimiter=',')
+	save_prediction(outname, allRes, combinedScore)
 
 X = read_data_into_rows("project_data/train.csv")
 Y = read_data_into_rows("project_data/train_y.csv")
 
 Yy, Yz = separate_classification_data(Y)
 
-ytrainer = forest_one_v_rest
-ztrainer = forest_one_v_rest
+runs = 1
+scores = []
+yPreds = []
+zPreds = []
 
-yclassifier, ypred, ytruth = ytrainer(X, Yy)
-zclassifier, zpred, ztruth = ztrainer(X, Yz)
+for i in range(runs):
+	ytrainer = forest_one_v_rest
+	ztrainer = forest_one_v_rest
 
-score = pred_score(ytruth, ztruth, ypred, zpred)
+	yclassifier, ypred, ytruth = ytrainer(X, Yy)
+	zclassifier, zpred, ztruth = ztrainer(X, Yz)
 
-print score
+	score = pred_score(ytruth, ztruth, ypred, zpred)
+	scores.append(score)
+	print score
 
-run_and_save_prediction("project_data/validate.csv", "validate", yclassifier, zclassifier, score)
+	if score < 0.17:
+		run_and_save_prediction("project_data/validate.csv", "validate", yclassifier, zclassifier, score)
+
+print np.mean(scores)
+print np.std(scores)
