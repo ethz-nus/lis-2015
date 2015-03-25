@@ -2,6 +2,7 @@ from read import *
 from forest import *
 from naive_svc import *
 import numpy as np
+from scipy.stats.mstats import mode
 
 def pred_score(trueYs, trueZs, predYs, predZs):
 	yscore = pred_score_single(trueYs, predYs)
@@ -40,10 +41,11 @@ Y = read_data_into_rows("project_data/train_y.csv")
 
 Yy, Yz = separate_classification_data(Y)
 
-runs = 1
+runs = 20
 scores = []
-yPreds = []
-zPreds = []
+yResults = []
+zResults = []
+incScores = 0
 
 for i in range(runs):
 	ytrainer = forest_one_v_rest
@@ -54,10 +56,22 @@ for i in range(runs):
 
 	score = pred_score(ytruth, ztruth, ypred, zpred)
 	scores.append(score)
+
 	print score
 
-	if score < 0.17:
-		run_and_save_prediction("project_data/validate.csv", "validate", yclassifier, zclassifier, score)
+	if score < 0.165:
+		yRes, zRes = run_prediction("project_data/validate.csv", yclassifier, zclassifier)
+		yResults.append(yRes)
+		zResults.append(zRes)
+		incScores += score
+
+if yResults:
+	yCombined = mode(np.array(yResults))[0]
+	zCombined = mode(np.array(zResults))[0]
+	allRes = np.dstack((yCombined, zCombined)).tolist()[0]
+	combinedScore = incScores / len(yResults)
+	save_prediction("validate", allRes, combinedScore)
+		#run_and_save_prediction("project_data/validate.csv", "validate", yclassifier, zclassifier, score)
 
 print np.mean(scores)
 print np.std(scores)
