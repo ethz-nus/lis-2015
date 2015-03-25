@@ -2,6 +2,8 @@ import numpy as np
 import sklearn.svm as sksvm
 import sklearn.cross_validation as skcv
 import sklearn.preprocessing as skpp
+import sklearn.grid_search as skgs
+import sklearn.metrics as skmet
 import read
 import scorer
 
@@ -24,21 +26,32 @@ def partition_and_train(X, Y, validationX):
     for label in Ytest:
         Ytest_Y.append(label[0])
         Ytest_Z.append(label[1])
-    svc_Y = sksvm.SVC()
-    svc_Z = sksvm.SVC()
-    svc_Y.fit(Xtrain, Ytrain_Y)
-    svc_Z.fit(Xtrain, Ytrain_Z)
-    predicted_Y = svc_Y.predict(Xtest)
-    predicted_Z = svc_Z.predict(Xtest)
+    gammas = np.logspace(-1,5,7)
+    epsilons = np.logspace(-5,-2,4)
+    scorefun = skmet.make_scorer(scorer.get_grid_search_scorer(len(Xtest)), greater_is_better=False)
+    svc_Y = sksvm.SVC(cache_size=1024)
+    svc_Z = sksvm.SVC(cache_size=1024)
+    classifier_Y = GridSearchCV(estimator=svc_Y, cv=5, scoring=scorefun, param_grid=dict(gamma=gammas, epsilon=epsilons))
+    classifier_Z = GridSearchCV(estimator=svc_Z, cv=5, scoring=scorefun, param_grid=dict(gamma=gammas, epsilon=epsilons))
+    #svc_Y.fit(Xtrain, Ytrain_Y)
+    #svc_Z.fit(Xtrain, Ytrain_Z)
+    #predicted_Y = svc_Y.predict(Xtest)
+    #predicted_Z = svc_Z.predict(Xtest)
+    classifier_Y.fit(Xtrain, Ytrain_Y)
+    classifier_Z.fit(Xtrain, Ytrain_Z)
+    print(classifier_Y.best_estimator_)
+    print(classifier_Z.best_estimator_)
+    predicted_Y = classifer_Y.predict(Xtest)
+    predicted_Z = classifier_Z.predict(Xtest)
     predicted_labels = make_y_dict_format(predicted_Y, predicted_Z)
     actual_labels = make_y_dict_format(Ytest_Y, Ytest_Z)
     estimated_score = scorer.calculate_score(predicted_labels, actual_labels) 
     print 'CV Score =', estimated_score 
     print 'Score on Y =', svc_Y.score(Xtest, Ytest_Y)
     print 'Score on Z = ', svc_Z.score(Xtest, Ytest_Z)
-    validation_Y = svc_Y.predict(validationX)
-    validation_Z = svc_Z.predict(validationX)
-    write_validation_result_to_file(validation_Y, validation_Z, estimated_score)
+    #validation_Y = svc_Y.predict(validationX)
+    #validation_Z = svc_Z.predict(validationX)
+    #write_validation_result_to_file(validation_Y, validation_Z, estimated_score)
 
 def make_x_row(x_dict):
     output = []

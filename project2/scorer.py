@@ -16,3 +16,6 @@ def calculate_score(predicted_labels, actual_labels):
         if predicted_labels[i]['Z'] != actual_labels[i]['Z']:
             zscore += 1.0
     return (yscore + zscore)/(2*n)
+
+def get_grid_search_scorer(n):
+    return lambda y, y_pred: 0.0 if y == y_pred else 1.0/n
