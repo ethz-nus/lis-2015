@@ -1,11 +1,14 @@
 from sklearn.ensemble import *
+from sklearn.decomposition import *
+from sklearn.feature_selection import *
+from sklearn.svm import *
 from sklearn.multiclass import OneVsRestClassifier
 from sklearn.pipeline import Pipeline
 import sklearn.cross_validation as skcv
 import sklearn.preprocessing as skpp
 
 normalise = True
-select = False
+select = True
 
 def random_forest(X, Y):
 	trainer = RandomForestClassifier(n_jobs=-1, n_estimators=53)
@@ -35,7 +38,9 @@ def build_classifier(X, Y, trainer):
 		normaliser = skpp.StandardScaler()
 		steps.append(('normaliser', normaliser))
 	if select:
-		selector = RandomForestClassifier(n_jobs=-1, n_estimators=106)
+		# selector = RandomForestClassifier(n_jobs=-1, n_estimators=106)
+		# selector = VarianceThreshold(threshold=0.05) #PCA doesn't seem to make any difference
+		selector = LinearSVC(penalty="l1", dual=False)
 		steps.append(('selector', selector))
 
 	steps.append(('classification', trainer))
