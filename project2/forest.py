@@ -7,11 +7,15 @@ def random_forest(X, Y):
 	return build_classifier(X, Y, trainer)
 	
 def extra_random_trees(X, Y):
-	trainer = ExtraTreesClassifier(n_jobs=-1, n_estimators=500)
+	trainer = ExtraTreesClassifier(n_jobs=-1, n_estimators=500, max_features=None)
 	return build_classifier(X, Y, trainer)
 
-def forest_one_v_rest(X, Y):
-	trainer = OneVsRestClassifier(ExtraTreesClassifier(n_jobs=-1, n_estimators=500))
+def forest_one_v_rest_y(X, Y):
+	trainer = OneVsRestClassifier(ExtraTreesClassifier(n_jobs=-1, n_estimators=1000, max_features=None))
+	return build_classifier(X, Y, trainer)
+
+def forest_one_v_rest_z(X, Y):
+	trainer = OneVsRestClassifier(ExtraTreesClassifier(n_jobs=-1, n_estimators=1000, max_features=None))
 	return build_classifier(X, Y, trainer)
 
 def ada_boost(X, Y):
@@ -20,7 +24,7 @@ def ada_boost(X, Y):
 	return build_classifier(X, Y, trainer)
 
 def gradient_boosting(X, Y):
-	trainer = GradientBoostingClassifier(n_estimators=1200, max_depth=6)
+	trainer = GradientBoostingClassifier(n_estimators=1200, max_depth=6, max_features=None)
 	return build_classifier(X, Y, trainer)
 
 def feature_select(X, Y):

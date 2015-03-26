@@ -56,8 +56,8 @@ else:
 
 Yy, Yz = separate_classification_data(Y)
 
-ytrainer = gradient_boosting
-ztrainer = forest_one_v_rest
+ytrainer = forest_one_v_rest_y
+ztrainer = forest_one_v_rest_z
 
 yclassifier, ypred, ytruth = ytrainer(X, Yy)
 zclassifier, zpred, ztruth = ztrainer(X, Yz)
