@@ -3,6 +3,7 @@ from forest import *
 from naive_svc import *
 import numpy as np
 from scipy.stats.mstats import mode
+from sklearn.covariance import EllipticEnvelope
 
 def pred_score(trueYs, trueZs, predYs, predZs):
 	yscore = pred_score_single(trueYs, predYs)
@@ -59,7 +60,7 @@ for i in range(runs):
 
 	print score
 
-	if score < 0.165:
+	if score < 0.15:
 		yRes, zRes = run_prediction("project_data/validate.csv", yclassifier, zclassifier)
 		yResults.append(yRes)
 		zResults.append(zRes)

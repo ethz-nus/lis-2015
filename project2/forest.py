@@ -11,15 +11,15 @@ normalise = True
 select = False
 
 def random_forest(X, Y):
-	trainer = RandomForestClassifier(n_jobs=-1, n_estimators=53)
+	trainer = RandomForestClassifier(n_jobs=-1, n_estimators=300, max_features=None)
 	return build_classifier(X, Y, trainer)
 	
 def extra_random_trees(X, Y):
-	trainer = ExtraTreesClassifier(n_jobs=-1, n_estimators=53)
+	trainer = ExtraTreesClassifier(n_jobs=-1, n_estimators=300,  max_features=None)
 	return build_classifier(X, Y, trainer)
 
 def forest_one_v_rest(X, Y):
-	trainer = OneVsRestClassifier(ExtraTreesClassifier(n_jobs=-1, n_estimators=265))
+	trainer = OneVsRestClassifier(ExtraTreesClassifier(n_jobs=-1, n_estimators=300,  max_features=None))
 	return build_classifier(X, Y, trainer)
 
 def ada_boost(X, Y):
@@ -28,7 +28,7 @@ def ada_boost(X, Y):
 	return build_classifier(X, Y, trainer)
 
 def gradient_boosting(X, Y):
-	trainer = GradientBoostingClassifier(n_estimators=600, max_depth=6)
+	trainer = GradientBoostingClassifier(n_estimators=700, max_depth=6, max_features=None)
 	return build_classifier(X, Y, trainer)
 
 def build_classifier(X, Y, trainer):	
@@ -39,10 +39,8 @@ def build_classifier(X, Y, trainer):
 		steps.append(('normaliser', normaliser))
 	if select:
 		# selector = RandomForestClassifier(n_jobs=-1, n_estimators=106)
-		selector = VarianceThreshold(threshold=0.05) 
-		#PCA doesn't seem to make any difference
-		#KernelPCA is bad
-		# selector = LinearSVC(penalty="l1", dual=False, C=1.5)
+		# selector = VarianceThreshold(threshold=0.05) 
+		selector = LinearSVC(penalty="l1", dual=False)
 		steps.append(('selector', selector))
 
 	steps.append(('classification', trainer))
