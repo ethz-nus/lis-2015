@@ -37,6 +37,12 @@ def run_and_save_prediction(testfile, outname, yclassifier, zclassifier, combine
 	allRes = zip(yRes, zRes)
 	save_prediction(outname, allRes, combinedScore)
 
+def save_mode_predictions(yResults, zResults, combinedScore, filename):
+	yCombined = mode(np.array(yResults))[0]
+	zCombined = mode(np.array(zResults))[0]
+	allRes = np.dstack((yCombined, zCombined)).tolist()[0]
+	save_prediction(filename, allRes, combinedScore)
+
 X = read_data_into_rows("project_data/train.csv")
 Y = read_data_into_rows("project_data/train_y.csv")
 
@@ -47,6 +53,9 @@ scores = []
 yResults = []
 zResults = []
 incScores = 0
+
+yTestResults = []
+zTestResults = []
 
 for i in range(runs):
 	ytrainer = forest_one_v_rest
@@ -66,13 +75,19 @@ for i in range(runs):
 		zResults.append(zRes)
 		incScores += score
 
+		yTestRes, zTestRes = run_prediction("project_data/test.csv", yclassifier, zclassifier)
+		yTestResults.append(yTestRes)
+		zTestResults.append(zTestRes)
+
 if yResults:
-	yCombined = mode(np.array(yResults))[0]
-	zCombined = mode(np.array(zResults))[0]
-	allRes = np.dstack((yCombined, zCombined)).tolist()[0]
+	# yCombined = mode(np.array(yResults))[0]
+	# zCombined = mode(np.array(zResults))[0]
+	# allRes = np.dstack((yCombined, zCombined)).tolist()[0]
 	combinedScore = incScores / len(yResults)
-	save_prediction("validate", allRes, combinedScore)
-		#run_and_save_prediction("project_data/validate.csv", "validate", yclassifier, zclassifier, score)
+	# save_prediction("validate", allRes, combinedScore)
+	save_mode_predictions(yResults, zResults, combinedScore, "validate")
+	save_mode_predictions(yTestResults, zTestResults, combinedScore, "test")
+
 
 print np.mean(scores)
 print np.std(scores)

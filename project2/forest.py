@@ -38,7 +38,6 @@ def build_classifier(X, Y, trainer):
 		normaliser = skpp.StandardScaler()
 		steps.append(('normaliser', normaliser))
 	if select:
-		# selector = RandomForestClassifier(n_jobs=-1, n_estimators=106)
 		# selector = VarianceThreshold(threshold=0.05) 
 		selector = LinearSVC(penalty="l1", dual=False)
 		steps.append(('selector', selector))
