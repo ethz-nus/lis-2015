@@ -2,6 +2,7 @@
 \usepackage{graphicx}
 \usepackage{amsmath}
 \usepackage[pdftex]{hyperref}
+\usepackage{multicol}
 
 % Lengths and indenting
 \setlength{\textwidth}{16.5cm}
@@ -18,7 +19,7 @@
 \renewcommand{\familydefault}{\sfdefault}
 
 \title{Introduction to Learning and Intelligent Systems - Spring 2015}
-\author{member1@student.ethz.ch\\ member2@student.ethz.ch\\ member3@student.ethz.ch\\}
+\author{jmohan@student.ethz.ch\\ nleow@student.ethz.ch\\ wongs@student.ethz.ch\\}
 \date{\today}
 
 \begin{document}
@@ -26,8 +27,24 @@
 
 \section*{Project 2 : Two-Label Classification}
 
-Briefly describe the steps used to produce the solution. Feel
-free to add plots or screenshots if you think it's necessary. The
-report should contain a maximum of 2 pages.
+\subsection*{Scaling Data}
+
+We first scale the input data to zero mean and unit variance using the StandardScaler in sklearn.preprocessing package. This is done so that classification predictors are not biased due to some variables being distributed over larger ranges than others.
+
+\subsection*{Classifier Algorithm}
+
+Since the labelling is done such that for each class one (and only one) label must be applied, we use a One Vs Rest Classifier as implemented in the sklearn.multiclass package. The Y label and Z label are trained using different classifiers so that the algorithm returns one label in each category.
+
+For the estimator used by the One Vs Rest Classifier, we use the extremely randomized trees technique as implemented in the sklearn.ensemble package. Controlling the tradeoff between runtime and accuracy, the number of trees in the forest is set to 300. At each node all features are considered to make the best valid split possible, as we observe that each feature has predictive power (insert data ?).
+
+The algorithm's performance was tested using random cross-validation through training on three-fourths of the train set and testing on the remaining quarter, as well as by examining performance on the validation set.
+
+\subsection*{Heuristics}
+
+We observed that a number of predictions were made with low confidence by the classifier (insert data ?). In order to mitigate this, for each observation, we run the classifier algorithm 20 times and predict the modal label in these runs for each of Y and Z. 
+
+\subsection*{Results}
+
+Our algorithm produces results in the range of 0.145 to 0.150 on both the internal cross-validation testing as well as the online validation set.
 
 \end{document}
