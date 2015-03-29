@@ -48,7 +48,7 @@ Y = read_data_into_rows("project_data/train_y.csv")
 
 Yy, Yz = separate_classification_data(Y)
 
-runs = 20
+runs = 50
 scores = []
 yResults = []
 zResults = []
@@ -80,11 +80,7 @@ for i in range(runs):
 		zTestResults.append(zTestRes)
 
 if yResults:
-	# yCombined = mode(np.array(yResults))[0]
-	# zCombined = mode(np.array(zResults))[0]
-	# allRes = np.dstack((yCombined, zCombined)).tolist()[0]
 	combinedScore = incScores / len(yResults)
-	# save_prediction("validate", allRes, combinedScore)
 	save_mode_predictions(yResults, zResults, combinedScore, "validate")
 	save_mode_predictions(yTestResults, zTestResults, combinedScore, "test")
 
