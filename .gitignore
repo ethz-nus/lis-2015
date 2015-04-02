@@ -3,3 +3,9 @@
 
 #ignore pyc
 *.pyc
+
+#ignore mac files
+._*
+*/._
+.DS_Store
+*/.DS_Store
