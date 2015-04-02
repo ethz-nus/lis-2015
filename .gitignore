@@ -4,8 +4,17 @@
 #ignore pyc
 *.pyc
 
+#ignore virtualenv
+.Python
+bin
+lib
+include
+
 #ignore mac files
 ._*
 */._
 .DS_Store
 */.DS_Store
+
+#ignore project-3 data
+project3/project_data
