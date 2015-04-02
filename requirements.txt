@@ -1,0 +1,7 @@
+Cython==0.22
+argparse==1.2.1
+h5py==2.4.0
+numpy==1.9.2
+scikit-learn==0.16.0
+scipy==0.15.1
+wsgiref==0.1.2
