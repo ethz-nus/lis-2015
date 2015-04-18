@@ -8,7 +8,7 @@ doTest = False
 
 def pred_score(truth, pred):
 	score = np.sum(map(lambda x: x[1] != pred[x[0]], enumerate(truth)))
-	return 1/(2.0 * len(truth)) * score
+	return 1/len(truth) * score
 
 def run_prediction(tfile, yclassifier):
 	testX = tfile['data']
@@ -37,7 +37,7 @@ test = h5py.File("project_data/test.h5", "r")
 X = train['data']
 Y = train['label']
 
-runs = 2
+runs = 3
 scores = []
 yResults = []
 incScores = 0
