@@ -17,7 +17,8 @@ def run_prediction(tfile, yclassifier):
 
 def save_prediction(outname, pred, score):
 	out = h5py.File(outname + '-%f.h5' % score , 'w')
-	out['label'] = pred
+	shape = pred.shape
+	out['label'] = pred.reshape((shape[1], shape[0]))
 	out.flush()
 
 def run_and_save_prediction(tfile, outname, yclassifier, combinedScore):
