@@ -37,7 +37,7 @@ test = h5py.File("project_data/test.h5", "r")
 X = train['data']
 Y = train['label']
 
-runs = 10
+runs = 2
 scores = []
 yResults = []
 incScores = 0
@@ -46,7 +46,7 @@ yTestResults = []
 
 for i in range(runs):
 	print 'running'
-	ytrainer = naive_bayes
+	ytrainer = extra_random_trees
 	print 'training'
 	Y = np.ravel(Y)
 	yclassifier, ypred, ytruth = ytrainer(X, Y)
@@ -55,7 +55,7 @@ for i in range(runs):
 	scores.append(score)
 
 	print score
-	threshold = 0.21
+	threshold = 0.27
 	if score < threshold:
 		yRes = run_prediction(validate, yclassifier)
 		yResults.append(yRes)

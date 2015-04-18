@@ -6,22 +6,22 @@ from sklearn.multiclass import OneVsRestClassifier
 from sklearn.pipeline import Pipeline
 import sklearn.cross_validation as skcv
 import sklearn.preprocessing as skpp
-from sklearn.naive_bayes import GaussianNB
+from sklearn.naive_bayes import *
 
 normalise = True
 select = False
 
-#Trees are too slow!
+#Trees are very slow, but naive baynes seems hopeless
 def random_forest(X, Y):
-	trainer = RandomForestClassifier(n_jobs=-1, n_estimators=300, max_features=None)
+	trainer = RandomForestClassifier(n_jobs=-1, n_estimators=1024, max_features=None)
 	return build_classifier(X, Y, trainer)
 	
 def extra_random_trees(X, Y):
-	trainer = ExtraTreesClassifier(n_jobs=-1, n_estimators=300,  max_features=None)
+	trainer = ExtraTreesClassifier(n_jobs=-1, n_estimators=1024,  max_features=None)
 	return build_classifier(X, Y, trainer)
 
 def forest_one_v_rest(X, Y):
-	trainer = OneVsRestClassifier(ExtraTreesClassifier(n_jobs=-1, n_estimators=300,  max_features=None))
+	trainer = OneVsRestClassifier(ExtraTreesClassifier(n_jobs=-1, n_estimators=1024,  max_features=None))
 	return build_classifier(X, Y, trainer)
 
 def ada_boost(X, Y):
@@ -34,7 +34,7 @@ def gradient_boosting(X, Y):
 	return build_classifier(X, Y, trainer)
 
 def naive_bayes(X, Y):
-	trainer = GaussianNB()
+	trainer = BernoulliNB()
 	return build_classifier(X, Y, trainer)
 
 def build_classifier(X, Y, trainer):	
@@ -44,7 +44,8 @@ def build_classifier(X, Y, trainer):
 		steps.append(('normaliser', normaliser))
 	if select:
 		# selector = VarianceThreshold(threshold=0.05) 
-		selector = LinearSVC(penalty="l1", dual=False)
+		#selector = LinearSVC(penalty="l1", dual=False)
+		selector = RandomForestClassifier(n_jobs=-1, n_estimators=300)
 		steps.append(('selector', selector))
 
 	steps.append(('classification', trainer))
