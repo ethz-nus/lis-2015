@@ -8,7 +8,7 @@ doTest = False
 
 def pred_score(truth, pred):
 	score = np.sum(map(lambda x: x[1] != pred[x[0]], enumerate(truth)))
-	return 1/len(truth) * score
+	return 1.0/len(truth) * score
 
 def run_prediction(tfile, yclassifier):
 	testX = tfile['data']

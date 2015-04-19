@@ -9,7 +9,7 @@ import sklearn.preprocessing as skpp
 from sklearn.naive_bayes import *
 
 normalise = True
-select = False
+select = True
 
 #Trees are very slow, but naive baynes seems hopeless
 def random_forest(X, Y):
@@ -17,7 +17,7 @@ def random_forest(X, Y):
 	return build_classifier(X, Y, trainer)
 	
 def extra_random_trees(X, Y):
-	trainer = ExtraTreesClassifier(n_jobs=-1, n_estimators=1024,  max_features=None)
+	trainer = ExtraTreesClassifier(n_jobs=-1, n_estimators=1024, max_features=None)
 	return build_classifier(X, Y, trainer)
 
 def forest_one_v_rest(X, Y):
@@ -43,9 +43,9 @@ def build_classifier(X, Y, trainer):
 		normaliser = skpp.StandardScaler()
 		steps.append(('normaliser', normaliser))
 	if select:
-		# selector = VarianceThreshold(threshold=0.05) 
+		selector = VarianceThreshold(threshold=0.05) 
 		#selector = LinearSVC(penalty="l1", dual=False)
-		selector = RandomForestClassifier(n_jobs=-1, n_estimators=300)
+		#selector = RandomForestClassifier(n_jobs=-1, n_estimators=300)
 		steps.append(('selector', selector))
 
 	steps.append(('classification', trainer))
