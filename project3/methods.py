@@ -8,9 +8,10 @@ import sklearn.cross_validation as skcv
 import sklearn.preprocessing as skpp
 from sklearn.naive_bayes import *
 from sklearn.decomposition import PCA
+from sklearn.neighbors import *
 
 normalise = True
-select = True
+select = False
 
 #Trees are very slow, but naive baynes seems hopeless
 def random_forest(X, Y):
@@ -38,17 +39,22 @@ def naive_bayes(X, Y):
 	trainer = BernoulliNB()
 	return build_classifier(X, Y, trainer)
 
+def nearest_centroid(X, Y):
+	trainer = NearestCentroid(metric='euclidean')
+	return build_classifier(X, Y, trainer)
+
 def build_classifier(X, Y, trainer):	
 	steps = []
 	if normalise:
 		normaliser = skpp.StandardScaler()
 		steps.append(('normaliser', normaliser))
 	if select:
+		print "with selection"
 		# selector = VarianceThreshold(threshold=0.05) 
-		# selector = PCA(n_components="mle") #makes things worse
+		# selector = PCA(n_components="mle")
 		#selector = LinearSVC(penalty="l1", dual=False)
 		#selector = RandomForestClassifier(n_jobs=-1, n_estimators=300)
-		selector = RFECV(estimator=GaussianNB())
+		selector = RFECV(estimator=RandomForestClassifier(n_jobs=-1))
 		steps.append(('selector', selector))
 
 	steps.append(('classification', trainer))

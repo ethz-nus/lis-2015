@@ -45,8 +45,8 @@ incScores = 0
 yTestResults = []
 
 for i in range(runs):
-	print 'running'
 	ytrainer = extra_random_trees
+	print 'running ' + ytrainer.__name__
 	print 'training'
 	Y = np.ravel(Y)
 	yclassifier, ypred, ytruth = ytrainer(X, Y)
