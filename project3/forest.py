@@ -7,6 +7,7 @@ from sklearn.pipeline import Pipeline
 import sklearn.cross_validation as skcv
 import sklearn.preprocessing as skpp
 from sklearn.naive_bayes import *
+from sklearn.decomposition import PCA
 
 normalise = True
 select = True
@@ -43,9 +44,11 @@ def build_classifier(X, Y, trainer):
 		normaliser = skpp.StandardScaler()
 		steps.append(('normaliser', normaliser))
 	if select:
-		selector = VarianceThreshold(threshold=0.05) 
+		# selector = VarianceThreshold(threshold=0.05) 
+		# selector = PCA(n_components="mle") #makes things worse
 		#selector = LinearSVC(penalty="l1", dual=False)
 		#selector = RandomForestClassifier(n_jobs=-1, n_estimators=300)
+		selector = RFECV(estimator=RandomForestClassifier(n_jobs=-1))
 		steps.append(('selector', selector))
 
 	steps.append(('classification', trainer))
