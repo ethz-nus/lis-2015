@@ -11,7 +11,7 @@ def pred_score(truth, pred):
 	return 1.0/len(truth) * score
 
 def run_prediction(tfile, yclassifier):
-	testX = tfile['data']
+	testX = np.array(tfile['data'])
 	yRes = yclassifier.predict(testX)
 	return yRes
 
@@ -34,8 +34,8 @@ train = h5py.File("project_data/train.h5", "r")
 validate = h5py.File("project_data/validate.h5", "r")
 test = h5py.File("project_data/test.h5", "r")
 
-X = train['data']
-Y = train['label']
+X = np.array(train['data'])
+Y = np.array(train['label'])
 
 runs = 3
 scores = []
