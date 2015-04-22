@@ -13,6 +13,9 @@ def pred_score(truth, pred):
 def run_prediction(tfile, yclassifier):
 	testX = np.array(tfile['data'])
 	yRes = yclassifier.predict(testX)
+	yProbs = yclassifier.predict_proba(testX)
+	print yProbs
+	
 	return yRes
 
 def save_prediction(outname, pred, score):
@@ -37,7 +40,7 @@ test = h5py.File("project_data/test.h5", "r")
 X = np.array(train['data'])
 Y = np.array(train['label'])
 
-runs = 5
+runs = 1
 scores = []
 yResults = []
 incScores = 0
@@ -45,18 +48,19 @@ incScores = 0
 yTestResults = []
 
 for i in range(runs):
-	ytrainer = extra_random_trees
+	ytrainer = naive_bayes
 	print 'running ' + ytrainer.__name__
 	print 'training'
 	Y = np.ravel(Y)
 	yclassifier, ypred, ytruth = ytrainer(X, Y)
-	print 'predicting'
+	
 	score = pred_score(ytruth, ypred)
 	scores.append(score)
-
+	
 	print score
 	threshold = 0.317
 	if score < threshold:
+		print 'predicting'
 		yRes = run_prediction(validate, yclassifier)
 		yResults.append(yRes)
 		

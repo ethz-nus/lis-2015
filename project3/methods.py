@@ -9,21 +9,27 @@ import sklearn.preprocessing as skpp
 from sklearn.naive_bayes import *
 from sklearn.decomposition import PCA
 from sklearn.neighbors import *
+from sklearn.tree import *
+from sklearn.calibration import CalibratedClassifierCV
 
-normalise = True
+normalise = False
 select = False
 
 #Trees are very slow, but naive baynes seems hopeless
 def random_forest(X, Y):
-	trainer = RandomForestClassifier(n_jobs=-1, n_estimators=1024, max_features=None)
+	trainer = RandomForestClassifier(n_jobs=-1, n_estimators=400, max_features=None)
 	return build_classifier(X, Y, trainer)
 	
 def extra_random_trees(X, Y):
-	trainer = ExtraTreesClassifier(n_jobs=-1, n_estimators=1024, max_features=None)
+	trainer = CalibratedClassifierCV(ExtraTreesClassifier(n_jobs=-1, n_estimators=400, max_features=None))
+	return build_classifier(X, Y, trainer)
+
+def decision_tree_classifier(X, Y):
+	trainer = DecisionTreeClassifier(max_features=None, max_depth=None)
 	return build_classifier(X, Y, trainer)
 
 def forest_one_v_rest(X, Y):
-	trainer = OneVsRestClassifier(ExtraTreesClassifier(n_jobs=-1, n_estimators=1024,  max_features=None))
+	trainer = OneVsRestClassifier(ExtraTreesClassifier(n_jobs=-1, n_estimators=400,  max_features=None))
 	return build_classifier(X, Y, trainer)
 
 def ada_boost(X, Y):
@@ -36,11 +42,16 @@ def gradient_boosting(X, Y):
 	return build_classifier(X, Y, trainer)
 
 def naive_bayes(X, Y):
-	trainer = BernoulliNB()
+	# trainer = CalibratedClassifierCV(GaussianNB())
+	trainer = GaussianNB()
 	return build_classifier(X, Y, trainer)
 
 def nearest_centroid(X, Y):
 	trainer = NearestCentroid(metric='euclidean')
+	return build_classifier(X, Y, trainer)
+
+def nearest_neighbours(X, Y):
+	trainer = RadiusNeighborsClassifier()
 	return build_classifier(X, Y, trainer)
 
 def build_classifier(X, Y, trainer):	
@@ -49,12 +60,12 @@ def build_classifier(X, Y, trainer):
 		normaliser = skpp.StandardScaler()
 		steps.append(('normaliser', normaliser))
 	if select:
-		print "with selection"
-		# selector = VarianceThreshold(threshold=0.05) 
+		selector = VarianceThreshold(threshold=0.05) 
 		# selector = PCA(n_components="mle")
 		#selector = LinearSVC(penalty="l1", dual=False)
 		#selector = RandomForestClassifier(n_jobs=-1, n_estimators=300)
-		selector = RFECV(estimator=RandomForestClassifier(n_jobs=-1))
+		#selector = RFECV(estimator=LinearSVC(penalty="l1", dual=False))
+		print type(selector)
 		steps.append(('selector', selector))
 
 	steps.append(('classification', trainer))
