@@ -11,6 +11,7 @@ from sklearn.decomposition import PCA
 from sklearn.neighbors import *
 from sklearn.tree import *
 from sklearn.calibration import CalibratedClassifierCV
+from sklearn.lda import LDA
 
 normalise = False
 select = False
@@ -35,6 +36,11 @@ def forest_one_v_rest(X, Y):
 def ada_boost(X, Y):
 	#doesnt perform as well as RandomForest or ExtraTrees
 	trainer = AdaBoostClassifier()
+	return build_classifier(X, Y, trainer)
+
+def linear_discriminant_analysis(X, Y):
+	# trainer = LDA(solver='lsqr', shrinkage='auto')
+	trainer = LDA()
 	return build_classifier(X, Y, trainer)
 
 def gradient_boosting(X, Y):

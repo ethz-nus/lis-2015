@@ -40,7 +40,7 @@ test = h5py.File("project_data/test.h5", "r")
 X = np.array(train['data'])
 Y = np.array(train['label'])
 
-runs = 1
+runs = 5
 scores = []
 yResults = []
 incScores = 0
@@ -48,7 +48,7 @@ incScores = 0
 yTestResults = []
 
 for i in range(runs):
-	ytrainer = naive_bayes
+	ytrainer = linear_discriminant_analysis
 	print 'running ' + ytrainer.__name__
 	print 'training'
 	Y = np.ravel(Y)
@@ -58,7 +58,7 @@ for i in range(runs):
 	scores.append(score)
 	
 	print score
-	threshold = 0.317
+	threshold = 0.28
 	if score < threshold:
 		print 'predicting'
 		yRes = run_prediction(validate, yclassifier)
