@@ -70,7 +70,7 @@ incScores = 0
 yTestResults = []
 
 for i in range(runs):
-	ytrainer = extra_random_trees
+	ytrainer = linear_discriminant_analysis
 	print 'running ' + ytrainer.__name__
 	print 'training'
 	Y = np.ravel(Y)
@@ -80,7 +80,7 @@ for i in range(runs):
 	scores.append(score)
 
 	print score
-	threshold = 0.317
+	threshold = 0.28
 	if score < threshold:
 		print 'predicting'
 		yRes = run_prob_prediction(validate, yclassifier)
