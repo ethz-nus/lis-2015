@@ -22,6 +22,7 @@ def random_forest(X, Y):
 	
 def extra_random_trees(X, Y):
 	trainer = CalibratedClassifierCV(ExtraTreesClassifier(n_jobs=-1, n_estimators=400, max_features=None))
+	# trainer = ExtraTreesClassifier(n_jobs=-1, n_estimators=400, max_features=None)
 	return build_classifier(X, Y, trainer)
 
 def decision_tree_classifier(X, Y):
@@ -42,8 +43,8 @@ def gradient_boosting(X, Y):
 	return build_classifier(X, Y, trainer)
 
 def naive_bayes(X, Y):
-	# trainer = CalibratedClassifierCV(GaussianNB())
-	trainer = GaussianNB()
+	trainer = CalibratedClassifierCV(GaussianNB())
+	# trainer = GaussianNB()
 	return build_classifier(X, Y, trainer)
 
 def nearest_centroid(X, Y):
