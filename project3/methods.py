@@ -19,7 +19,7 @@ from sklearn.calibration import CalibratedClassifierCV
 from sklearn.lda import LDA
 
 normalise = False
-select = True
+select = False
 
 #Trees are very slow, but naive baynes seems hopeless
 def random_forest(X, Y):

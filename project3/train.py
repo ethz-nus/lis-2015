@@ -40,7 +40,7 @@ test = h5py.File("project_data/test.h5", "r")
 X = np.array(train['data'])
 Y = np.array(train['label'])
 
-runs = 5  
+runs = 10  
 scores = []
 yResults = []
 incScores = 0
