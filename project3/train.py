@@ -13,8 +13,8 @@ def pred_score(truth, pred):
 def run_prediction(tfile, yclassifier):
 	testX = np.array(tfile['data'])
 	yRes = yclassifier.predict(testX)
-	yProbs = yclassifier.predict_proba(testX)
-	print yProbs
+	#yProbs = yclassifier.predict_proba(testX)
+	#print yProbs
 	
 	return yRes
 

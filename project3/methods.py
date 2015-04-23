@@ -62,7 +62,7 @@ def nearest_centroid(X, Y):
     return build_classifier(X, Y, trainer)
 
 def deep_belief_network(X, Y):
-    trainer = DBN([-1, 1024, 512, 256, 128, 64, 32, 16, -1], learn_rates=0.01, epochs=5, verbose=1)
+    trainer = DBN([-1,1024,512,256,128,64,32,16,-1], learn_rates=0.01, epochs=10, verbose=1)
     return build_classifier(X, Y, trainer)
 
 def nearest_neighbours(X, Y):
