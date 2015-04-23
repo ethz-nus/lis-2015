@@ -13,9 +13,10 @@ from sklearn.tree import *
 from sklearn.calibration import CalibratedClassifierCV
 from sklearn.lda import LDA
 from sklearn.qda import QDA
+from nolearn.dbn import DBN
 
 normalise = False
-select = False
+select = True
 
 #Trees are very slow, but naive baynes seems hopeless
 def random_forest(X, Y):
@@ -66,17 +67,22 @@ def nearest_neighbours(X, Y):
 	trainer = RadiusNeighborsClassifier()
 	return build_classifier(X, Y, trainer)
 
+def deep_belief_network(X, Y):
+    trainer = DBN([-1, 1024, 512, 256, 128, 64, 32, 16, -1], learn_rates=0.01, epochs=5, verbose=1)
+    return build_classifier(X, Y, trainer)
+
 def build_classifier(X, Y, trainer):	
 	steps = []
 	if normalise:
 		normaliser = skpp.StandardScaler()
 		steps.append(('normaliser', normaliser))
 	if select:
-		selector = VarianceThreshold(threshold=0.05) 
+		# selector = VarianceThreshold(threshold=0.05) 
 		# selector = PCA(n_components="mle")
 		#selector = LinearSVC(penalty="l1", dual=False)
 		#selector = RandomForestClassifier(n_jobs=-1, n_estimators=300)
 		#selector = RFECV(estimator=LinearSVC(penalty="l1", dual=False))
+		selector = LDA(n_components=9)
 		print type(selector)
 		steps.append(('selector', selector))
 
