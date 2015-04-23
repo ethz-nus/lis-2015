@@ -37,7 +37,7 @@ test = h5py.File("project_data/test.h5", "r")
 X = np.array(train['data'])
 Y = np.array(train['label'])
 
-runs = 5
+runs = 1  
 scores = []
 yResults = []
 incScores = 0
@@ -45,7 +45,7 @@ incScores = 0
 yTestResults = []
 
 for i in range(runs):
-	ytrainer = extra_random_trees
+	ytrainer = deep_belief_network
 	print 'running ' + ytrainer.__name__
 	print 'training'
 	Y = np.ravel(Y)
