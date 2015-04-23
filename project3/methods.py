@@ -19,24 +19,24 @@ from sklearn.calibration import CalibratedClassifierCV
 from sklearn.lda import LDA
 
 normalise = False
-select = False
+select = True
 
 #Trees are very slow, but naive baynes seems hopeless
 def random_forest(X, Y):
-	trainer = RandomForestClassifier(n_jobs=-1, n_estimators=400, max_features=None)
-	return build_classifier(X, Y, trainer)
-	
+    trainer = RandomForestClassifier(n_jobs=-1, n_estimators=400, max_features=None)
+    return build_classifier(X, Y, trainer)
+
 def extra_random_trees(X, Y):
-	trainer = CalibratedClassifierCV(ExtraTreesClassifier(n_jobs=-1, n_estimators=400, max_features=None))
-	return build_classifier(X, Y, trainer)
+    trainer = CalibratedClassifierCV(ExtraTreesClassifier(n_jobs=-1, n_estimators=400, max_features=None))
+    return build_classifier(X, Y, trainer)
 
 def decision_tree_classifier(X, Y):
-	trainer = DecisionTreeClassifier(max_features=None, max_depth=None)
-	return build_classifier(X, Y, trainer)
+    trainer = DecisionTreeClassifier(max_features=None, max_depth=None)
+    return build_classifier(X, Y, trainer)
 
 def forest_one_v_rest(X, Y):
-	trainer = OneVsRestClassifier(ExtraTreesClassifier(n_jobs=-1, n_estimators=400,  max_features=None))
-	return build_classifier(X, Y, trainer)
+    trainer = OneVsRestClassifier(ExtraTreesClassifier(n_jobs=-1, n_estimators=400,  max_features=None))
+    return build_classifier(X, Y, trainer)
 
 def ada_boost(X, Y):
     #doesnt perform as well as RandomForest or ExtraTrees
@@ -44,18 +44,18 @@ def ada_boost(X, Y):
     return build_classifier(X, Y, trainer)
 
 def linear_discriminant_analysis(X, Y):
-	# trainer = LDA(solver='lsqr', shrinkage='auto')
-	trainer = LDA()
-	return build_classifier(X, Y, trainer)
+    # trainer = LDA(solver='lsqr', shrinkage='auto')
+    trainer = LDA()
+    return build_classifier(X, Y, trainer)
 
 def gradient_boosting(X, Y):
     trainer = GradientBoostingClassifier(n_estimators=700, max_depth=6, max_features=None)
     return build_classifier(X, Y, trainer)
 
 def naive_bayes(X, Y):
-	# trainer = CalibratedClassifierCV(GaussianNB())
-	trainer = GaussianNB()
-	return build_classifier(X, Y, trainer)
+    # trainer = CalibratedClassifierCV(GaussianNB())
+    trainer = GaussianNB()
+    return build_classifier(X, Y, trainer)
 
 def nearest_centroid(X, Y):
     trainer = NearestCentroid(metric='euclidean')
@@ -66,22 +66,23 @@ def deep_belief_network(X, Y):
     return build_classifier(X, Y, trainer)
 
 def nearest_neighbours(X, Y):
-	trainer = RadiusNeighborsClassifier()
-	return build_classifier(X, Y, trainer)
+    trainer = RadiusNeighborsClassifier()
+    return build_classifier(X, Y, trainer)
 
 def build_classifier(X, Y, trainer):	
-	steps = []
-	if normalise:
-		normaliser = skpp.StandardScaler()
-		steps.append(('normaliser', normaliser))
-	if select:
-		selector = VarianceThreshold(threshold=0.05) 
-		# selector = PCA(n_components="mle")
-		#selector = LinearSVC(penalty="l1", dual=False)
-		#selector = RandomForestClassifier(n_jobs=-1, n_estimators=300)
-		#selector = RFECV(estimator=LinearSVC(penalty="l1", dual=False))
-		print type(selector)
-		steps.append(('selector', selector))
+    steps = []
+    if normalise:
+        normaliser = skpp.StandardScaler()
+        steps.append(('normaliser', normaliser))
+    if select:
+        #selector = VarianceThreshold(threshold=0.05) 
+        # selector = PCA(n_components="mle")
+        #selector = LinearSVC(penalty="l1", dual=False)
+        #selector = RandomForestClassifier(n_jobs=-1, n_estimators=300)
+        #selector = RFECV(estimator=LinearSVC(penalty="l1", dual=False))
+        selector = LDA(n_components=9)
+        print type(selector)
+        steps.append(('selector', selector))
 
     steps.append(('classification', trainer))
     trainer = Pipeline(steps)
