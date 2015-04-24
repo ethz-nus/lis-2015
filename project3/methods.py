@@ -26,7 +26,7 @@ select = False
 def random_forest(X, Y):
     trainer = RandomForestClassifier(n_jobs=-1, n_estimators=400, max_features=None)
     return build_classifier(X, Y, trainer)
-    
+
 def extra_random_trees(X, Y):
     trainer = CalibratedClassifierCV(ExtraTreesClassifier(n_jobs=-1, n_estimators=400, max_features=None))
     return build_classifier(X, Y, trainer)
@@ -76,11 +76,12 @@ def build_classifier(X, Y, trainer):
         normaliser = skpp.StandardScaler()
         steps.append(('normaliser', normaliser))
     if select:
-        selector = VarianceThreshold(threshold=0.05) 
+        #selector = VarianceThreshold(threshold=0.05) 
         # selector = PCA(n_components="mle")
         #selector = LinearSVC(penalty="l1", dual=False)
         #selector = RandomForestClassifier(n_jobs=-1, n_estimators=300)
         #selector = RFECV(estimator=LinearSVC(penalty="l1", dual=False))
+        selector = LDA(n_components=9)
         print type(selector)
         steps.append(('selector', selector))
 
