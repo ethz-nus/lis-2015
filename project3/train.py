@@ -1,10 +1,11 @@
 import h5py
 from methods import *
 import numpy as np
+import cudamat
 from scipy.stats.mstats import mode
 from sklearn.covariance import EllipticEnvelope
 
-doTest = False
+doTest = True
 
 def pred_score(truth, pred):
 	score = np.sum(map(lambda x: x[1] != pred[x[0]], enumerate(truth)))
@@ -40,7 +41,8 @@ test = h5py.File("project_data/test.h5", "r")
 X = np.array(train['data'])
 Y = np.array(train['label'])
 
-runs = 1  
+runs = 20 
+#runs = 1
 scores = []
 yResults = []
 incScores = 0
