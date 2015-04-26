@@ -18,7 +18,7 @@
 \renewcommand{\familydefault}{\sfdefault}
 
 \title{Introduction to Learning and Intelligent Systems - Spring 2015}
-\author{member1@student.ethz.ch\\ member2@student.ethz.ch\\ member3@student.ethz.ch\\}
+\author{jmohan@student.ethz.ch\\ nleow@student.ethz.ch\\ wongs@student.ethz.ch\\}
 \date{\today}
 
 \begin{document}
@@ -26,8 +26,34 @@
 
 \section*{Project 3 : Image Classification}
 
-Briefly describe the steps used to produce the solution. Feel
-free to add plots or screenshots if you think it's necessary. The
-report should contain a maximum of 2 pages.
+As this is a classification problem with 10 labels and 2048 features, we evaluated the following methods
+
+\begin{itemize}
+  \item Random Forest
+  \item Extra Random Trees
+  \item Decision Tree Classifier
+  \item Linear Discriminant Analysis
+  \item Gradient Boosting
+  \item Naive Bayes
+  \item Nearest Neighbours
+  \item Deep Belief Networks
+\end{itemize}
+
+Most of the methods were tried using the relevant scikit-learn\footnote{\url{http://scikit-learn.org}} implementation, except for deep belief networks where we utilized nolearn\footnote{\url{http://pythonhosted.org/nolearn}}
+
+In general, we deduced the following
+\begin{itemize}
+  \item Methods based on constructing random Decision Trees and Gradient Boosting resulted in long training times
+  \item Normalization of data will not improve the prediction metric based on Decision Trees, Naive Bayes or Linear Discriminant Analysis
+  \item Decision Trees and Naive Bayes on various heuristics could not break the easy benchmark
+  \item Linear Discriminant Analysis with Single value decomposition met the easy benchmark
+  \item Deep Belief Networks gave the best prediction metrics
+\end{itemize}
+
+The CUDAMat library\footnote{\url{https://github.com/cudamat/cudamat}} was used with Deep Belief Networks to perform matrix calculations on the GPU, which allowed shorter training times by about 50 times. This made the training of multiple deeper networks and over greater number of epochs feasible, leading to better predictions.
+
+We do not yet understand how the number of hidden layers or number of nodes in each layer in the network correlates with the performance of the network. Hence, we had to design the deep belief network by trial and error, using the rule of thumb that the number of nodes in each layer should be between the number of features and the number of classifications.
+
+Using trial and error techniques, we found that a network with 6 hidden layers, with 1024, 512, 256, 128, 64, and 32 nodes in each respectively, trained over 50 epochs at a learning rate of 0.01 gave a good performance. Moreover, we used a modal technique, training 20 neural networks and outputting the modal prediction to counteract errors due to overfit. This technique allowed an improvement from an average error of about 0.233 using a single network to an overall error of 0.1748 on the validation data, beating the hard baseline.
 
 \end{document}
