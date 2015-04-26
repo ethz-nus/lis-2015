@@ -18,7 +18,7 @@
 \renewcommand{\familydefault}{\sfdefault}
 
 \title{Introduction to Learning and Intelligent Systems - Spring 2015}
-\author{member1@student.ethz.ch\\ member2@student.ethz.ch\\ member3@student.ethz.ch\\}
+\author{jmohan@student.ethz.ch\\ nleow@student.ethz.ch\\ wongs@student.ethz.ch\\}
 \date{\today}
 
 \begin{document}
@@ -26,8 +26,35 @@
 
 \section*{Project 3 : Image Classification}
 
-Briefly describe the steps used to produce the solution. Feel
-free to add plots or screenshots if you think it's necessary. The
-report should contain a maximum of 2 pages.
+As this is a classification problem with 10 labels and 2048 features, we used the following methods
+
+\begin{itemize}
+  \item Random Forest
+  \item Extra Random Trees
+  \item Decision Tree Classifier
+  \item Ada Boost
+  \item Linear Discriminant Analysis
+  \item Gradient Boosting
+  \item Naive Bayes
+  \item Nearest Centroid
+  \item Nearest Neighbours
+  \item Deep Belief Networks
+\end{itemize}
+
+In general, we deduced the following
+\begin{itemize}
+  \item Trees resulted in long training times
+  \item Naive bayes timed out during training
+  \item Normalization of data did not improve the prediction metric
+  \item Trees and naive bayes on various heuristics could not break the easy benchmark
+  \item Linear Discriminant Analysis with Single value decomposition met the easy benchmark.
+  \item Deep Belief Networks gave the best prediction metrics
+\end{itemize}
+
+CUDAMat was used on Deep Belief Networks to shorten training times by at least 10x. This also resulted in a large improvement of scores.
+
+We do not yet understand why increasing the number of layers in the network increases performance. Stack overflow sources recommended a range between the number of features and number of classifications.
+
+A modal method was used to boost the results of the deep belief networks.
 
 \end{document}
