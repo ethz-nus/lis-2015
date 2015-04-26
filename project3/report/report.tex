@@ -26,7 +26,7 @@
 
 \section*{Project 3 : Image Classification}
 
-As this is a classification problem with 10 labels and 2048 features, we used the following methods
+As this is a classification problem with 10 labels and 2048 features, we evaluated the following methods
 
 \begin{itemize}
   \item Random Forest
@@ -41,19 +41,21 @@ As this is a classification problem with 10 labels and 2048 features, we used th
   \item Deep Belief Networks
 \end{itemize}
 
+Most of the methods were tried using the relevant scikit-learn\footnote{\url{http://scikit-learn.org}} implementation, except for deep belief networks where we utilized nolearn\footnote{\url{http://pythonhosted.org/nolearn}}
+
 In general, we deduced the following
 \begin{itemize}
   \item Trees, Gradient Boosting resulted in long training times
   \item Normalization of data did not improve the prediction metric
-  \item Trees and naive bayes on various heuristics could not break the easy benchmark
+  \item Trees and Naive Bayes on various heuristics could not break the easy benchmark
   \item Linear Discriminant Analysis with Single value decomposition met the easy benchmark.
   \item Deep Belief Networks gave the best prediction metrics
 \end{itemize}
 
-CUDAMat was used on Deep Belief Networks to shorten training times by at least 10x. This also resulted in a large improvement of scores.
+The CUDAMat library\footnote{\url{https://github.com/cudamat/cudamat}} was used with Deep Belief Networks to perform matrix calculations on the GPU, which allowed shorter training times by about 50 times. This made the training of multiple deeper networks and over greater number of epochs feasible, leading to better predictions.
 
-We do not yet understand why increasing the number of layers in the network increases performance. Stack overflow sources recommended a range between the number of features and number of classifications.
+Using trial and error techniques, we found that a network with 6 hidden layers, with 1024, 512, 256, 128, 64, and 32 nodes in each respectively, trained over 50 epochs at a learning rate of 0.01 gave a good performance. Moreover, we used a modal technique, training 20 neural networks and outputting the modal prediction to counteract errors due to overfit. This technique allowed an improvement from an average error of about 0.233 using a single network to an overall error of 0.1748 on the validation data, beating the hard baseline.
 
-A modal method was used to boost the results of the deep belief networks.
+We do not yet understand why increasing the number of layers or modifying the particular number of nodes in each layer in the network increases performance. Stack overflow sources recommended a range between the number of features and number of classifications.
 
 \end{document}
