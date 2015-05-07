@@ -4,7 +4,7 @@ import csv
 from scipy.stats.mstats import mode
 from sklearn.covariance import EllipticEnvelope
 
-doTest = False
+doTest = True
 
 def pred_score(truth, pred):
     # truth is the actual label
@@ -46,7 +46,7 @@ print np.shape(Y)
 print np.shape(validate)
 print np.shape(test)
 
-runs = 1 
+runs = 3 
 scores = []
 yResults = []
 incScores = 0
