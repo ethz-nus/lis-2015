@@ -1,19 +1,11 @@
-from sklearn.ensemble import *
+import numpy as np
 from sklearn.decomposition import *
 from sklearn.feature_selection import *
 from sklearn.svm import *
-from sklearn.multiclass import OneVsRestClassifier
 from sklearn.pipeline import Pipeline
 import sklearn.cross_validation as skcv
 import sklearn.preprocessing as skpp
-from sklearn.naive_bayes import *
 from sklearn.decomposition import PCA
-from sklearn.lda import LDA
-from sklearn.qda import QDA
-from sklearn.neighbors import *
-from sklearn.neural_network import BernoulliRBM
-from sklearn.linear_model import LogisticRegression
-from sklearn.tree import *
 from sklearn.calibration import CalibratedClassifierCV
 from sklearn.lda import LDA
 from sklearn.semi_supervised import LabelSpreading
@@ -29,6 +21,24 @@ def label_spreading(X, Y):
 def label_propagation(X, Y):
     trainer = LabelPropagation(kernel='knn')
     return build_classifier(X, Y, trainer)
+
+def split_train_set(X, Y):
+    labX = []
+    labY = []
+    uX = []
+    uY = []
+    for i in range(len(Y)):
+        c = Y[i]
+        if c == -1:
+            uX.append(X[i])
+            uY.append(c)
+        else:
+            labX.append(X[i])
+            labY.append(c)
+    Xtrain, Xtest, Ytrain, Ytest = skcv.train_test_split(labX, labY, train_size=0.75)
+    Xtrain = np.append(Xtrain, uX, axis=0)
+    Ytrain = np.append(Ytrain, uY, axis=0)
+    return Xtrain, Xtest, Ytrain, Ytest
 
 def build_classifier(X, Y, trainer): 
     steps = []
@@ -48,7 +58,7 @@ def build_classifier(X, Y, trainer):
     steps.append(('classification', trainer))
     trainer = Pipeline(steps)
 
-    Xtrain, Xtest, Ytrain, Ytest = skcv.train_test_split(X, Y, train_size=0.75)
+    Xtrain, Xtest, Ytrain, Ytest = split_train_set(X, Y)
     classifier = trainer.fit(Xtrain, Ytrain)
 
     Ypred = trainer.predict_proba(Xtest)
