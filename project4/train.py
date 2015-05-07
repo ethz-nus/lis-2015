@@ -64,7 +64,7 @@ for i in range(runs):
     scores.append(score)
     
     print score
-    threshold = 10
+    threshold = 0.25
     if score < threshold:
         print 'predicting'
         yRes = run_prediction(validate, yclassifier)
