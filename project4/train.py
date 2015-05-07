@@ -27,7 +27,7 @@ def run_and_save_prediction(tfile, outname, yclassifier, combinedScore):
     save_prediction(outname, yRes, combinedScore)
 
 def save_mode_predictions(yResults, score, filename):
-    yCombined = np.mean(yResults, axis=0)
+    yCombined = np.nanmean(yResults, axis=0)
     save_prediction(filename, yCombined, score)
 
 def read_data_into_rows(filepath, datatype):
@@ -46,7 +46,7 @@ print np.shape(Y)
 print np.shape(validate)
 print np.shape(test)
 
-runs = 3 
+runs = 5 
 scores = []
 yResults = []
 incScores = 0
