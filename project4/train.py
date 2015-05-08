@@ -2,7 +2,6 @@ from methods import *
 import numpy as np
 import csv
 from scipy.stats.mstats import mode
-from sklearn.covariance import EllipticEnvelope
 
 doTest = True
 
