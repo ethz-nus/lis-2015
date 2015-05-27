@@ -18,7 +18,7 @@
 \renewcommand{\familydefault}{\sfdefault}
 
 \title{Introduction to Learning and Intelligent Systems - Spring 2015}
-\author{member1@student.ethz.ch\\ member2@student.ethz.ch\\ member3@student.ethz.ch\\}
+\author{jmohan@student.ethz.ch\\ nleow@student.ethz.ch\\ wongs@student.ethz.ch\\}
 \date{\today}
 
 \begin{document}
@@ -26,8 +26,8 @@
 
 \section*{Project 4 : Classification with Missing Labels}
 
-Briefly describe the steps used to produce the solution. Feel
-free to add plots or screenshots if you think it's necessary. The
-report should contain a maximum of 2 pages.
+We used 75\% of the labelled data for training, leaving behind 25\% of the data for cross validation. To fill in the missing labels for the training data and develop a model for predicting the labels of new data, we used the \textit{LabelPropagation} library from \textit{sklearn}.
+
+In order to improve the accuracy of our predictions, we trained 5 predictors based on 5 different random splits of our test data and took the average of the predicted probabilites by the predictors which scored less than 0.25 on our cross validation set.
 
 \end{document}
